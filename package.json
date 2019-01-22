@@ -1,0 +1,11 @@
+{
+  "name": "sequencer-ext",
+  "version": "0.0.1",
+  "description": "This tool lets you chain and save sequences of pages that you visit for later perusal.",
+  "main": "index.js",
+  "author": "Will Fehrnstrom",
+  "license": "GPL",
+  "dependencies": {
+    "spectre.css": "^0.5.8"
+  }
+}
