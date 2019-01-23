@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel='stylesheet' href='../css/styles.css'/>
   <link rel='stylesheet' href='../node_modules/spectre.css/dist/spectre.min.css'/>
   <link rel='stylesheet' href='../css/spectre_overrides.css'/>
 </head>
 <body>
   <script src='../js/popup.js'></script>
   <div class='quick_buttons'>
-    <button id="sq_btn" class='btn'>Start a Sequence</button>
+    <button id="sq_btn" class='btn'>Start Sequencing Pages</button>
+  </div>
+  <!-- <div class='sequence-container accordion' id='sequences-accordian'>
+    <button id='btn btn-primary'>
+  </div> -->
+  <!-- standard Accordions example -->
+  <div class="accordion">
+    <input type="checkbox" id="sequences-accordion" name="accordion-checkbox" hidden>
+    <label class="accordion-header" for="sequences-accordian">
+      <i class="icon icon-arrow-right mr-1"></i>
+      My Sequences
+    </label>
+    <div class="accordion-body">
+      <!-- Accordions content -->
+    </div>
   </div>
 </body>
 </html>

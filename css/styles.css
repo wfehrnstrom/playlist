@@ -1,0 +1,12 @@
+.accordion-header {
+  background-color: #1AA1F4;
+
+}
+
+.accordion-body {
+  margin-bottom: 0 !important;
+}
+
+.accordion-body > .btn {
+  width: 100%;
+}

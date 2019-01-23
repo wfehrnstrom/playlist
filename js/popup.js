@@ -1,14 +1,16 @@
-function replace_item(existing, newNode, parentN=null){
+function replace_ui_node(existing, newNode, parentN=null){
   parentN = (parentN) ? parentN : document;
   parentN.insertBefore(newNode, existing);
   parentN.removeChild(existing);
 }
 
-function createButton(id, className, clickHandler, innerHTML=''){
-  let btn = document.createElement('button');
+function createButton(id, className, clickHandler=null, innerHTML='', as='button'){
+  let btn = document.createElement(as);
   btn.id = id;
   btn.className = className;
-  btn.addEventListener('click', clickHandler);
+  if(clickHandler != null){
+    btn.addEventListener('click', clickHandler);
+  }
   btn.innerHTML = innerHTML;
   return btn;
 }
@@ -62,11 +64,8 @@ function newPageInSequence(){
     let url = tabs[0].url;
     // TODO: Encrypt URL here
     chrome.storage.sync.get(["sequenceMap", "activeSequence"], function(result){
-      console.log("accessed storage");
-      console.log("Sequence Map String: " + result.sequenceMap);
       let sequenceMap = decodeMapFromString(result.sequenceMap);
       let seqId = result.activeSequence;
-      console.log('checking id: ' + seqId);
       if(!validSeqId(seqId)){
         console.error("Sequence Identifier Invalid. Aborting...");
       }
@@ -77,10 +76,10 @@ function newPageInSequence(){
       sequence.push(url);
       sequenceMap.set(seqId, sequence);
       chrome.storage.sync.set({"sequenceMap": encodeStringFromMap(sequenceMap)}, function(){
-        console.log("Sequence insertion complete.");
+        createSequenceInPopupUI(seqId, url);
         chrome.storage.sync.get("sequenceMap", function(result){
           console.log(result.sequenceMap);
-        })
+        });
       });
     });
   });
@@ -110,23 +109,49 @@ function on_sq_btn_click(sequencing){
 function changeSequencingButton(){
   chrome.storage.local.get('sequencing', function(result){
     let sequencing = result.sequencing;
-    let newBtn;
-    let buttonArea = document.querySelectorAll('.quick_buttons')[0];
     if(sequencing){
-      newBtn = createButton('sq_btn', 'btn', on_sq_btn_click(true), 'Stop Sequencing Pages');
-      let addToSequenceBtn = createButton('add_to_sq_btn', 'btn', newPageInSequence, 'Add this page to sequence');
-      buttonArea.appendChild(addToSequenceBtn);
+      startSequencing();
     }
     else{
-      newBtn = createButton('sq_btn', 'btn', on_sq_btn_click(false), 'Start Sequencing Pages');
-      let addToSequenceBtn = document.getElementById('add_to_sq_btn');
-      if(addToSequenceBtn){
-        buttonArea.removeChild(addToSequenceBtn);
-      }
+      stopSequencing();
     }
-    let existingBtn = document.getElementById('sq_btn');
-    replace_item(existingBtn, newBtn, buttonArea);
   })
+}
+
+function startSequencing(){
+  showSequencingButtons();
+}
+
+// This should be executed every time the popup loads for all sequences
+function createSequenceInPopupUI(seqId, startUrl){
+  let seqGoBtn = createButton(`seqLink-${seqId}`, 'btn', null, seqId, 'a');
+  seqGoBtn.href = startUrl;
+  let sequencesAccordion = document.querySelectorAll('.accordion-body')[0];
+  sequencesAccordion.appendChild(seqGoBtn);
+}
+
+function showSequencingButtons(){
+  let buttonArea = document.querySelectorAll('.quick_buttons')[0];
+  let stopSeqBtn = createButton('sq_btn', 'btn', on_sq_btn_click(true), 'Stop Sequencing Pages');
+  let addToSeqBtn = createButton('add_to_sq_btn', 'btn', newPageInSequence, 'Add this page to sequence');
+  let startSeqBtn = document.getElementById('sq_btn');
+  buttonArea.appendChild(addToSeqBtn);
+  replace_ui_node(startSeqBtn, stopSeqBtn, buttonArea);
+}
+
+function stopSequencing(){
+  hideSequencingButtons();
+}
+
+function hideSequencingButtons(){
+  let buttonArea = document.querySelectorAll('.quick_buttons')[0];
+  let stopSeqBtn = document.getElementById('sq_btn');
+  let startSeqBtn = createButton('sq_btn', 'btn', on_sq_btn_click(false), 'Start Sequencing Pages');
+  let addToSeqBtn = document.getElementById('add_to_sq_btn');
+  if(addToSeqBtn){
+    buttonArea.removeChild(addToSeqBtn);
+  }
+  replace_ui_node(stopSeqBtn, startSeqBtn, buttonArea);
 }
 
 changeSequencingButton();
