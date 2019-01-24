@@ -71,12 +71,12 @@ function newPageInSequence(){
       }
       if(!sequenceMap.has(seqId)){
         sequenceMap.set(seqId, []);
+        createSequenceInPopupUI(seqId, url);
       }
       let sequence = sequenceMap.get(seqId);
       sequence.push(url);
       sequenceMap.set(seqId, sequence);
       chrome.storage.sync.set({"sequenceMap": encodeStringFromMap(sequenceMap)}, function(){
-        createSequenceInPopupUI(seqId, url);
         chrome.storage.sync.get("sequenceMap", function(result){
           console.log(result.sequenceMap);
         });
@@ -124,10 +124,16 @@ function startSequencing(){
 
 // This should be executed every time the popup loads for all sequences
 function createSequenceInPopupUI(seqId, startUrl){
-  let seqGoBtn = createButton(`seqLink-${seqId}`, 'btn', null, seqId, 'a');
-  seqGoBtn.href = startUrl;
+  let centerDiv = document.createElement('div');
+  centerDiv.innerHTML = seqId;
+  centerDiv.className = 'p-centered';
+  let seqLinkBtn = document.createElement('a');
+  seqLinkBtn.id = `seqLink-${seqId}`;
+  seqLinkBtn.className = 'btn seqLink';
+  seqLinkBtn.appendChild(centerDiv);
+  seqLinkBtn.href = startUrl;
   let sequencesAccordion = document.querySelectorAll('.accordion-body')[0];
-  sequencesAccordion.appendChild(seqGoBtn);
+  sequencesAccordion.appendChild(seqLinkBtn);
 }
 
 function showSequencingButtons(){
